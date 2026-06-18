@@ -28,6 +28,7 @@ function setupCanvasScale(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
 export function TeacherWhiteboard() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const overlayCanvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawingRef = useRef<boolean>(false);
   const lastPointRef = useRef<Point | null>(null);
 
@@ -40,23 +41,57 @@ export function TeacherWhiteboard() {
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) {
+    const overlay = overlayCanvasRef.current;
+    if (!canvas || !overlay) {
       return;
     }
+
+    const ratio = window.devicePixelRatio || 1;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    overlay.width = Math.floor(width * ratio);
+    overlay.height = Math.floor(height * ratio);
 
     const context = setupCanvasScale(canvas);
     context.lineCap = "round";
     context.lineJoin = "round";
     context.lineWidth = lineWidth;
     context.strokeStyle = mode === "eraser" ? "#FFFFFF" : strokeColor;
-  }, [lineWidth, strokeColor, mode]);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    if (!canvas) {
+    const overlay = overlayCanvasRef.current;
+    if (!canvas || !overlay) {
       return;
     }
     const drawingCanvas = canvas;
+    const overlayCanvas = overlay;
+
+    function drawPreview(point: Point): void {
+      const overlayContext = overlayCanvas.getContext("2d");
+      if (!overlayContext) {
+        return;
+      }
+
+      const ratio = window.devicePixelRatio || 1;
+      overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+
+      if (mode === "text") {
+        overlayContext.fillStyle = "#818181";
+        const dotRadius = Math.max(2, Math.round(3 * ratio));
+        overlayContext.beginPath();
+        overlayContext.arc(point.x * ratio, point.y * ratio, dotRadius, 0, Math.PI * 2);
+        overlayContext.fill();
+        return;
+      }
+
+      overlayContext.strokeStyle = "#818181";
+      overlayContext.lineWidth = 2;
+      overlayContext.beginPath();
+      overlayContext.arc(point.x * ratio, point.y * ratio, (lineWidth / 2) * ratio, 0, Math.PI * 2);
+      overlayContext.stroke();
+    }
 
     function onPointerDown(event: PointerEvent): void {
       drawingRef.current = true;
@@ -64,6 +99,9 @@ export function TeacherWhiteboard() {
     }
 
     function onPointerMove(event: PointerEvent): void {
+      const current = getPointFromEvent(event, drawingCanvas);
+      drawPreview(current);
+
       if (!drawingRef.current || mode === "text") {
         return;
       }
@@ -73,7 +111,6 @@ export function TeacherWhiteboard() {
         return;
       }
 
-      const current = getPointFromEvent(event, drawingCanvas);
       const previous = lastPointRef.current;
       if (!previous) {
         lastPointRef.current = current;
@@ -96,16 +133,25 @@ export function TeacherWhiteboard() {
       lastPointRef.current = null;
     }
 
+    function onPointerLeave(): void {
+      drawingRef.current = false;
+      lastPointRef.current = null;
+      const overlayContext = overlayCanvas.getContext("2d");
+      if (overlayContext) {
+        overlayContext.clearRect(0, 0, overlayCanvas.width, overlayCanvas.height);
+      }
+    }
+
     drawingCanvas.addEventListener("pointerdown", onPointerDown);
     drawingCanvas.addEventListener("pointermove", onPointerMove);
     drawingCanvas.addEventListener("pointerup", onPointerEnd);
-    drawingCanvas.addEventListener("pointerleave", onPointerEnd);
+    drawingCanvas.addEventListener("pointerleave", onPointerLeave);
 
     return () => {
       drawingCanvas.removeEventListener("pointerdown", onPointerDown);
       drawingCanvas.removeEventListener("pointermove", onPointerMove);
       drawingCanvas.removeEventListener("pointerup", onPointerEnd);
-      drawingCanvas.removeEventListener("pointerleave", onPointerEnd);
+      drawingCanvas.removeEventListener("pointerleave", onPointerLeave);
     };
   }, [lineWidth, strokeColor, mode]);
 
@@ -272,11 +318,17 @@ export function TeacherWhiteboard() {
         </div>
       </div>
 
-      <canvas
-        className="mt-4 h-[420px] w-full touch-none rounded-xl border border-ocean/20 bg-white cursor-crosshair"
-        onClick={addText}
-        ref={canvasRef}
-      />
+      <div className="relative mt-4">
+        <canvas
+          className="mt-4 h-[420px] w-full touch-none rounded-xl border border-ocean/20 bg-white cursor-none"
+          onClick={addText}
+          ref={canvasRef}
+        />
+        <canvas
+          className="absolute inset-0 top-0 h-[420px] w-full touch-none rounded-xl pointer-events-none"
+          ref={overlayCanvasRef}
+        />
+      </div>
     </section>
   );
 }
