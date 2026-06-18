@@ -1,0 +1,153 @@
+import { LessonPlan, PracticeChoice, PracticeGap, VerbItem, VocabItem } from "./courseTypes";
+import { translateWord } from "./translationDictionary";
+
+function readSection(markdown: string, sectionTitle: string): string {
+  const pattern = new RegExp(`##\\s*${sectionTitle}[^\\n]*\\n([\\s\\S]*?)(?=\\n##\\s|$)`, "i");
+  const match = markdown.match(pattern);
+  return match?.[1]?.trim() ?? "";
+}
+
+function readObjective(markdown: string): string {
+  const match = markdown.match(/\*\*Objetivo:\*\*\s*(.+)/i);
+  return match?.[1]?.trim() ?? "Objetivo nao informado";
+}
+
+function readTitle(markdown: string): string {
+  const match = markdown.match(/^#\s+(.+)/m);
+  return match?.[1]?.trim() ?? "Aula sem titulo";
+}
+
+function splitList(content: string): string[] {
+  const cleanRows = content
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => line.replace(/^[-\d.\s]+/, "").trim());
+
+  if (cleanRows.length > 0) {
+    return cleanRows;
+  }
+
+  return ["Conteudo de revisao em sala."];
+}
+
+function parseVocabulary(vocabSection: string): VocabItem[] {
+  const rows = vocabSection
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.includes("|") && !line.includes("---") && !line.toLowerCase().includes("substantivo"));
+
+  if (rows.length === 0) {
+    return [
+      { word: "review", translation: "revisao", supportWord: "conteudo anterior" },
+      { word: "practice", translation: "pratica", supportWord: "atividades guiadas" }
+    ];
+  }
+
+  return rows.map((row) => {
+    const [first, second] = row
+      .split("|")
+      .map((part) => part.trim())
+      .filter(Boolean);
+
+    return {
+      word: first,
+      translation: translateWord(first),
+      supportWord: second ?? "uso geral"
+    };
+  });
+}
+
+function parseVerbs(verbsSection: string): VerbItem[] {
+  const verbsLine = verbsSection
+    .split("\n")
+    .map((line) => line.trim())
+    .find((line) => line.startsWith("-") || line.includes(","));
+
+  if (!verbsLine) {
+    return [{ verb: "review", usage: "revisao", translation: "revisar" }];
+  }
+
+  return verbsLine
+    .replace(/^-\s*/, "")
+    .split(",")
+    .map((chunk) => chunk.trim())
+    .filter(Boolean)
+    .map((verb) => ({
+      verb,
+      usage: "aplique em frases da aula",
+      translation: translateWord(verb)
+    }));
+}
+
+function parseGrammar(markdown: string): { title: string; bullets: string[] } {
+  const section = readSection(markdown, "Gram[aá]tica");
+  const bullets = splitList(section);
+  return {
+    title: "Foco gramatical",
+    bullets
+  };
+}
+
+function pickDistractors(pool: string[], answer: string): string[] {
+  const uniquePool = Array.from(new Set(pool.filter((item) => item !== answer)));
+  return uniquePool.slice(0, 2);
+}
+
+function buildPractice(vocab: VocabItem[], verbs: VerbItem[]): { fillBlanks: PracticeGap[]; multipleChoice: PracticeChoice[] } {
+  const fillBlanks = verbs.slice(0, 3).map((item) => ({
+    prompt: `Complete com o verbo correto: I ______ every day. (${item.translation})`,
+    answer: item.verb.split(" ")[0].toLowerCase(),
+    tip: `Use o verbo "${item.verb}".`
+  }));
+
+  const translations = vocab.map((item) => item.translation);
+  const multipleChoice = vocab.slice(0, 3).map((item) => {
+    const distractors = pickDistractors(translations, item.translation);
+    return {
+      question: `Qual a melhor traducao para "${item.word}"?`,
+      options: [item.translation, ...distractors].sort(),
+      answer: item.translation
+    };
+  });
+
+  return {
+    fillBlanks,
+    multipleChoice
+  };
+}
+
+function readOrder(fileName: string): number {
+  if (fileName.toLowerCase().includes("show")) {
+    return 0;
+  }
+
+  const value = fileName.match(/(\d{2})/)?.[1];
+  return Number(value ?? 99);
+}
+
+export function parseLesson(fileName: string, markdown: string): LessonPlan {
+  const title = readTitle(markdown);
+  const objective = readObjective(markdown);
+  const vocab = parseVocabulary(readSection(markdown, "Vocabul[aá]rio"));
+  const verbs = parseVerbs(readSection(markdown, "Verbos"));
+  const grammar = parseGrammar(markdown);
+  const prep = splitList(readSection(markdown, "Prepara[cç][aã]o"));
+  const development = splitList(readSection(markdown, "Desenvolvimento"));
+  const homework = splitList(readSection(markdown, "Homework"));
+  const practice = buildPractice(vocab, verbs);
+
+  return {
+    id: fileName.toLowerCase().replace(".md", ""),
+    order: readOrder(fileName),
+    title,
+    objective,
+    vocab,
+    verbs,
+    grammar,
+    prep,
+    development,
+    homework,
+    practice
+  };
+}
