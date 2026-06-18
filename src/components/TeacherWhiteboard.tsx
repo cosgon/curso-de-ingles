@@ -26,12 +26,17 @@ function setupCanvasScale(canvas: HTMLCanvasElement): CanvasRenderingContext2D {
 }
 
 export function TeacherWhiteboard() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const drawingRef = useRef<boolean>(false);
   const lastPointRef = useRef<Point | null>(null);
 
   const [lineWidth, setLineWidth] = useState<number>(3);
   const [strokeColor, setStrokeColor] = useState<string>("#1D3557");
+  const [mode, setMode] = useState<"pen" | "eraser" | "text">("pen");
+  const [textInput, setTextInput] = useState<string>("");
+  const [textSize, setTextSize] = useState<number>(16);
+  const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -40,9 +45,11 @@ export function TeacherWhiteboard() {
     }
 
     const context = setupCanvasScale(canvas);
-    context.strokeStyle = strokeColor;
+    context.lineCap = "round";
+    context.lineJoin = "round";
     context.lineWidth = lineWidth;
-  }, [lineWidth, strokeColor]);
+    context.strokeStyle = mode === "eraser" ? "#FFFFFF" : strokeColor;
+  }, [lineWidth, strokeColor, mode]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -57,7 +64,7 @@ export function TeacherWhiteboard() {
     }
 
     function onPointerMove(event: PointerEvent): void {
-      if (!drawingRef.current) {
+      if (!drawingRef.current || mode === "text") {
         return;
       }
 
@@ -73,8 +80,10 @@ export function TeacherWhiteboard() {
         return;
       }
 
-      context.strokeStyle = strokeColor;
       context.lineWidth = lineWidth;
+      context.strokeStyle = mode === "eraser" ? "#FFFFFF" : strokeColor;
+      context.lineCap = "round";
+      context.lineJoin = "round";
       context.beginPath();
       context.moveTo(previous.x, previous.y);
       context.lineTo(current.x, current.y);
@@ -98,7 +107,7 @@ export function TeacherWhiteboard() {
       drawingCanvas.removeEventListener("pointerup", onPointerEnd);
       drawingCanvas.removeEventListener("pointerleave", onPointerEnd);
     };
-  }, [lineWidth, strokeColor]);
+  }, [lineWidth, strokeColor, mode]);
 
   function clearCanvas(): void {
     const canvas = canvasRef.current;
@@ -114,41 +123,158 @@ export function TeacherWhiteboard() {
     context.clearRect(0, 0, canvas.width, canvas.height);
   }
 
+  function addText(event: React.MouseEvent<HTMLCanvasElement>): void {
+    if (mode !== "text" || !textInput) {
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    if (!canvas) {
+      return;
+    }
+
+    const context = canvas.getContext("2d");
+    if (!context) {
+      return;
+    }
+
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    context.fillStyle = strokeColor;
+    context.font = `${textSize}px Arial`;
+    context.fillText(textInput, x, y);
+  }
+
+  function toggleFullscreen(): void {
+    const container = containerRef.current;
+    if (!container) {
+      return;
+    }
+
+    if (!isFullscreen) {
+      if (container.requestFullscreen) {
+        container.requestFullscreen();
+        setIsFullscreen(true);
+      }
+    } else {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    }
+  }
+
   return (
-    <section className="rounded-2xl bg-white/90 p-5 shadow-lesson">
+    <section className="rounded-2xl bg-white/90 p-5 shadow-lesson" ref={containerRef}>
       <h2 className="font-heading text-2xl text-ocean">Whiteboard do professor</h2>
       <p className="mt-1 text-sm text-slate">Use esta area para explicar estruturas, exemplos e corrigir respostas ao vivo.</p>
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <label className="text-sm font-bold text-slate" htmlFor="line-width">
-          Espessura
-        </label>
-        <input
-          id="line-width"
-          max={10}
-          min={1}
-          onChange={(event) => setLineWidth(Number(event.target.value))}
-          type="range"
-          value={lineWidth}
-        />
+      <div className="mt-4 space-y-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="text-sm font-bold text-slate" htmlFor="mode-select">
+            Ferramenta
+          </label>
+          <select
+            id="mode-select"
+            onChange={(event) => setMode(event.target.value as "pen" | "eraser" | "text")}
+            value={mode}
+            className="rounded-lg border border-ocean/20 px-3 py-2 text-sm"
+          >
+            <option value="pen">Caneta</option>
+            <option value="eraser">Borracha</option>
+            <option value="text">Texto</option>
+          </select>
+        </div>
 
-        <label className="text-sm font-bold text-slate" htmlFor="line-color">
-          Cor
-        </label>
-        <input
-          id="line-color"
-          onChange={(event) => setStrokeColor(event.target.value)}
-          type="color"
-          value={strokeColor}
-        />
+        {mode === "pen" && (
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="text-sm font-bold text-slate" htmlFor="line-width">
+              Espessura
+            </label>
+            <input
+              id="line-width"
+              max={10}
+              min={1}
+              onChange={(event) => setLineWidth(Number(event.target.value))}
+              type="range"
+              value={lineWidth}
+            />
 
-        <button className="rounded-lg bg-ocean px-4 py-2 text-sm font-bold text-dawn" onClick={clearCanvas} type="button">
-          Limpar quadro
-        </button>
+            <label className="text-sm font-bold text-slate" htmlFor="line-color">
+              Cor
+            </label>
+            <input
+              id="line-color"
+              onChange={(event) => setStrokeColor(event.target.value)}
+              type="color"
+              value={strokeColor}
+            />
+          </div>
+        )}
+
+        {mode === "eraser" && (
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="text-sm font-bold text-slate" htmlFor="eraser-width">
+              Tamanho da borracha
+            </label>
+            <input
+              id="eraser-width"
+              max={30}
+              min={1}
+              onChange={(event) => setLineWidth(Number(event.target.value))}
+              type="range"
+              value={lineWidth}
+            />
+          </div>
+        )}
+
+        {mode === "text" && (
+          <div className="flex flex-wrap items-center gap-3">
+            <input
+              className="rounded-lg border border-ocean/20 px-3 py-2 text-sm"
+              onChange={(event) => setTextInput(event.target.value)}
+              placeholder="Digite o texto"
+              type="text"
+              value={textInput}
+            />
+            <label className="text-sm font-bold text-slate" htmlFor="text-size">
+              Tamanho
+            </label>
+            <input
+              id="text-size"
+              max={48}
+              min={8}
+              onChange={(event) => setTextSize(Number(event.target.value))}
+              type="range"
+              value={textSize}
+            />
+            <label className="text-sm font-bold text-slate" htmlFor="text-color">
+              Cor
+            </label>
+            <input
+              id="text-color"
+              onChange={(event) => setStrokeColor(event.target.value)}
+              type="color"
+              value={strokeColor}
+            />
+          </div>
+        )}
+
+        <div className="flex flex-wrap gap-2">
+          <button className="rounded-lg bg-ocean px-4 py-2 text-sm font-bold text-dawn" onClick={clearCanvas} type="button">
+            Limpar quadro
+          </button>
+          <button className="rounded-lg border border-ocean bg-white px-4 py-2 text-sm font-bold text-ocean" onClick={toggleFullscreen} type="button">
+            {isFullscreen ? "Sair de tela cheia" : "Tela cheia"}
+          </button>
+        </div>
       </div>
 
       <canvas
-        className="mt-4 h-[420px] w-full touch-none rounded-xl border border-ocean/20 bg-white"
+        className="mt-4 h-[420px] w-full touch-none rounded-xl border border-ocean/20 bg-white cursor-crosshair"
+        onClick={addText}
         ref={canvasRef}
       />
     </section>

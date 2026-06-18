@@ -1,6 +1,6 @@
 # Aula Show – Food & Drink
 
-**Objetivo:** Introdução lúdica, vocabulário de alimentação, verbos eat/drink, verbo to be com I/you.
+**Objetivo:** Introdução lúdica, vocabulário de alimentação, verbos eat/drink, com I/you.
 
 ## Vocabulário (20)
 | Substantivo | Adjetivo   |
