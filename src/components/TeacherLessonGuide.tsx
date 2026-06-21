@@ -1,7 +1,7 @@
-import { LessonPlan } from "../data/courseTypes";
+import { TeacherGuidePlan } from "../data/courseTypes";
 
 type TeacherLessonGuideProps = {
-  lesson: LessonPlan;
+  lesson: TeacherGuidePlan;
 };
 
 export function TeacherLessonGuide({ lesson }: TeacherLessonGuideProps) {
@@ -18,16 +18,45 @@ export function TeacherLessonGuide({ lesson }: TeacherLessonGuideProps) {
         <article className="rounded-xl bg-dawn/70 p-3">
           <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">Objetivo pedagogico</h4>
           <p className="mt-1 text-sm text-slate">{lesson.objective}</p>
+          <p className="mt-1 text-xs text-slate/80">Duracao: {lesson.duration} | Nivel: {lesson.level}</p>
+        </article>
+
+        <article className="rounded-xl bg-dawn/70 p-3">
+          <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">Vocabulos e traducoes</h4>
+          <ul className="mt-2 space-y-1 text-sm text-slate">
+            {lesson.vocab.slice(0, 10).map((item) => (
+              <li key={`vocab-${item.word}`}>
+                {item.word}: {item.translation} | contexto: {item.supportWord}
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="rounded-xl bg-dawn/70 p-3">
+          <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">Verbos alvo</h4>
+          <ul className="mt-2 space-y-1 text-sm text-slate">
+            {lesson.verbs.map((item) => (
+              <li key={`verb-${item.verb}`}>
+                {item.verb}: {item.translation}
+              </li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="rounded-xl bg-dawn/70 p-3">
+          <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">Estruturas da aula</h4>
+          <ul className="mt-2 space-y-1 text-sm text-slate">
+            {lesson.structures.map((item) => (
+              <li key={`structure-${item}`}>{item}</li>
+            ))}
+          </ul>
         </article>
 
         <article className="rounded-xl bg-dawn/70 p-3">
           <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">Roteiro de apresentacao</h4>
           <ul className="mt-2 space-y-1 text-sm text-slate">
-            {lesson.prep.map((item) => (
-              <li key={`prep-${item}`}>Preparar: {item}</li>
-            ))}
-            {lesson.development.map((item) => (
-              <li key={`dev-${item}`}>Explicar e praticar: {item}</li>
+            {lesson.timeline.map((item) => (
+              <li key={`timeline-${item}`}>{item}</li>
             ))}
           </ul>
         </article>
@@ -35,22 +64,25 @@ export function TeacherLessonGuide({ lesson }: TeacherLessonGuideProps) {
         <article className="rounded-xl bg-dawn/70 p-3">
           <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">Gabarito da pratica</h4>
           <ul className="mt-2 space-y-1 text-sm text-slate">
-            {lesson.practice.fillBlanks.map((question, index) => (
-              <li key={`gap-${question.prompt}`}>{index + 1}. {question.prompt} Resposta: {question.answer}</li>
-            ))}
-            {lesson.practice.multipleChoice.map((question, index) => (
-              <li key={`choice-${question.question}`}>
-                {index + 1}. {question.question} Resposta: {question.answer}
+            {lesson.controlledPractice.map((item, index) => (
+              <li key={`practice-${item}`}>
+                {index + 1}. {item}
               </li>
             ))}
           </ul>
         </article>
 
         <article className="rounded-xl bg-dawn/70 p-3">
-          <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">Fechamento e homework</h4>
+          <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">Fechamento e resumo</h4>
           <ul className="mt-2 space-y-1 text-sm text-slate">
-            {lesson.homework.map((item) => (
-              <li key={`home-${item}`}>{item}</li>
+            {lesson.wrapUp.map((item) => (
+              <li key={`wrap-${item}`}>{item}</li>
+            ))}
+          </ul>
+          <h5 className="mt-3 text-sm font-bold uppercase tracking-wide text-ocean">Resumo da aula</h5>
+          <ul className="mt-2 space-y-1 text-sm text-slate">
+            {lesson.lessonSummary.map((item) => (
+              <li key={`summary-${item}`}>{item}</li>
             ))}
           </ul>
         </article>

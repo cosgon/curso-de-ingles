@@ -1,7 +1,6 @@
 export type VocabItem = {
   word: string;
   translation: string;
-  supportWord: string;
 };
 
 export type VerbItem = {
@@ -44,4 +43,20 @@ export type LessonPlan = {
   development: string[];
   homework: string[];
   practice: LessonPractice;
+};
+
+export type TeacherGuidePlan = {
+  id: string;
+  order: number;
+  title: string;
+  objective: string;
+  duration: string;
+  level: string;
+  vocab: VocabItem[];
+  verbs: VerbItem[];
+  structures: string[];
+  timeline: string[];
+  controlledPractice: string[];
+  wrapUp: string[];
+  lessonSummary: string[];
 };

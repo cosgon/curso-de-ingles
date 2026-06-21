@@ -1,10 +1,10 @@
 # Copilot Instructions
 
-You are an expert web developer. I have a set of README files describing 21 English lessons (1 show + 20 main lessons). Each README contains vocabulary, verbs, grammar focus, preparation tasks, in-class activities, and homework, it is on ./Instructions.
+You are an expert web developer. I have a set of README files describing English lessons. Each README contains vocabulary, verbs, grammar focus, preparation tasks, and homework, it is on ./classes.
 
 Based on these files, generate an interactive single-page application for students using React and Tailwind CSS. The app should:
 
-- Have a homepage listing all lessons (show + 1 to 20) with a navigation menu.
+- Have a homepage listing all lessons dinamically showed with a navigation menu.
 - For each lesson, display:
   - Vocabulary list with translation (flashcard style, click to flip).
   - Verb conjugation table for the target tense.

@@ -1,50 +1,41 @@
-# Lesson 01 – Simple Present: Daily Routines
-
-**Objetivo:** Falar sobre rotinas diárias no trabalho.
+# Lesson 01 – Simple Present: Routines
 
 ## Vocabulário (20)
-| Substantivo      | Adjetivo     |
-|------------------|--------------|
-| meeting          | daily        |
-| report           | weekly       |
-| email            | important    |
-| call             | quick        |
-| break            | short        |
-| lunch            | healthy      |
-| task             | simple       |
-| project          | new          |
-| deadline         | tight        |
-| colleague        | helpful      |
-| boss             | busy         |
-| office           | modern       |
-| computer         | fast         |
-| phone            | mobile       |
-| desk             | clean        |
-| chair            | comfortable  |
-| coffee           | hot          |
-| water            | cold         |
-| document         | digital      |
-| presentation     | clear        |
+- Cold soda
+- Hot chocolate
+- Iced Lemonade
+- Fresh coconut water
+- Sweet milkshake
+- Sparkling water
+- Warm tea
+- Natural juice
+- Creamy smoothie
+- Refreshing beer
+- Crispy bacon
+- Soft bread
+- Spicy chicken
+- Sweet pancakes
+- Salty popcorn
+- Fresh sushi
+- Hot pizza
+- Cold ice cream
+- Tasty burger
+- Creamy pasta
 
 ## Verbos
-- get up, start, finish, work, have
+- Drink, Eat, Like
 
 ## Gramática
-- Simple Present: afirmativa (I work), negativa (I don't work), interrogativa (Do you work?).
-- Uso para hábitos e rotinas.
+- A or An
 
 ## Preparação
-Estudar vocabulário e conjugação.
-
-## Desenvolvimento
-1. Warm-up: revisão da aula show.
-2. Vocabulário: associar imagens, repetir.
-3. Verbos: drilling com rotinas.
-4. Explicação gramatical com exemplos.
-5. Prática guiada: completar frases sobre rotina.
-6. Produção livre: em duplas, perguntar e responder sobre o dia típico.
-7. Feedback.
+- I drink _______
+- I don't eat _____
+- Do you like to eat _____?
 
 ## Homework
-- Completar: I ______ at 7am. (get up)
-- Escrever 8 frases sobre sua rotina de trabalho.
+1. Do you drink sparkling water?
+2. Do you like to eat salty sushi?
+3. Do you like smoothie?
+4. Do you eat creamy pasta?
+5. Do you like to eat bacon?

@@ -1,10 +1,22 @@
 import { LessonPlan, PracticeChoice, PracticeGap, VerbItem, VocabItem } from "./courseTypes";
 import { translateWord } from "./translationDictionary";
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 function readSection(markdown: string, sectionTitle: string): string {
-  const pattern = new RegExp(`##\\s*${sectionTitle}[^\\n]*\\n([\\s\\S]*?)(?=\\n##\\s|$)`, "i");
-  const match = markdown.match(pattern);
-  return match?.[1]?.trim() ?? "";
+  const aliases = sectionTitle.split("|").map((alias) => alias.trim()).filter(Boolean);
+
+  for (const alias of aliases) {
+    const pattern = new RegExp(`##\\s*${escapeRegExp(alias)}[^\\n]*\\n([\\s\\S]*?)(?=\\n##\\s|$)`, "i");
+    const match = markdown.match(pattern);
+    if (match?.[1]?.trim()) {
+      return match[1].trim();
+    }
+  }
+
+  return "";
 }
 
 function readObjective(markdown: string): string {
@@ -39,8 +51,8 @@ function parseVocabulary(vocabSection: string): VocabItem[] {
 
   if (rows.length === 0) {
     return [
-      { word: "review", translation: "revisao", supportWord: "conteudo anterior" },
-      { word: "practice", translation: "pratica", supportWord: "atividades guiadas" }
+      { word: "review", translation: "revisao"},
+      { word: "practice", translation: "pratica"}
     ];
   }
 
@@ -51,11 +63,9 @@ function parseVocabulary(vocabSection: string): VocabItem[] {
       .filter(Boolean);
 
     return {
-      word: first,
-      translation: translateWord(first),
-      supportWord: second ?? "uso geral"
-    };
-  });
+      word: `${second ? `${second} ` : ""}${first}`,
+      translation: translateWord(`${first} ${second ?? ""}`.trim()),
+  }; });
 }
 
 function parseVerbs(verbsSection: string): VerbItem[] {
@@ -81,7 +91,7 @@ function parseVerbs(verbsSection: string): VerbItem[] {
 }
 
 function parseGrammar(markdown: string): { title: string; bullets: string[] } {
-  const section = readSection(markdown, "Gram[aá]tica");
+  const section = readSection(markdown, "Gramatica|Gramática|Grammar");
   const bullets = splitList(section);
   return {
     title: "Foco gramatical",
@@ -122,19 +132,19 @@ function readOrder(fileName: string): number {
     return 0;
   }
 
-  const value = fileName.match(/(\d{2})/)?.[1];
+  const value = fileName.match(/(\d+)/)?.[1];
   return Number(value ?? 99);
 }
 
 export function parseLesson(fileName: string, markdown: string): LessonPlan {
   const title = readTitle(markdown);
   const objective = readObjective(markdown);
-  const vocab = parseVocabulary(readSection(markdown, "Vocabul[aá]rio"));
-  const verbs = parseVerbs(readSection(markdown, "Verbos"));
+  const vocab = parseVocabulary(readSection(markdown, "Vocabulario|Vocabulário|Vocabulary"));
+  const verbs = parseVerbs(readSection(markdown, "Verbos|Verbos da aula|Verbs"));
   const grammar = parseGrammar(markdown);
-  const prep = splitList(readSection(markdown, "Prepara[cç][aã]o"));
-  const development = splitList(readSection(markdown, "Desenvolvimento"));
-  const homework = splitList(readSection(markdown, "Homework"));
+  const prep = splitList(readSection(markdown, "Preparacao|Preparação|Warm-up|Warm up"));
+  const development = splitList(readSection(markdown, "Desenvolvimento|Development|Structure Presentation|Controlled Practice"));
+  const homework = splitList(readSection(markdown, "Homework|Wrap-up|Wrap up"));
   const practice = buildPractice(vocab, verbs);
 
   return {

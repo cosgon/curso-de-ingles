@@ -2,11 +2,11 @@ import { FormEvent, useState } from "react";
 import { Link } from "react-router-dom";
 import { TeacherLessonGuide } from "../components/TeacherLessonGuide";
 import { TeacherWhiteboard } from "../components/TeacherWhiteboard";
-import { LessonPlan } from "../data/courseTypes";
+import { TeacherGuidePlan } from "../data/courseTypes";
 import { useTeacherAccess } from "../hooks/useTeacherAccess";
 
 type TeacherPageProps = {
-  lessons: LessonPlan[];
+  lessons: TeacherGuidePlan[];
 };
 
 export function TeacherPage({ lessons }: TeacherPageProps) {

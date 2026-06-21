@@ -29,7 +29,6 @@ export function VocabFlashcards({ vocab }: VocabFlashcardsProps) {
             >
               <p className="text-xs font-bold uppercase tracking-wide text-mint">{isOpen ? "PT-BR" : "EN"}</p>
               <p className="mt-1 font-heading text-xl text-slate">{isOpen ? item.translation : item.word}</p>
-              <p className="mt-1 text-xs text-slate/80">Contexto: {item.supportWord}</p>
             </button>
           );
         })}

@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { lessonCatalog } from "./data/lessonMarkdown";
+import { lessonCatalog, teacherGuideCatalog } from "./data/lessonMarkdown";
 import { useLessonProgress } from "./hooks/useLessonProgress";
 import { LessonPage } from "./pages/LessonPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
@@ -19,7 +19,7 @@ function App() {
         element={<LessonPage completedIds={completedIds} lessons={lessonCatalog} onToggleLesson={toggleLesson} />}
         path="/lesson/:lessonId"
       />
-      <Route element={<TeacherPage lessons={lessonCatalog} />} path="/teacher" />
+      <Route element={<TeacherPage lessons={teacherGuideCatalog} />} path="/teacher" />
       <Route element={<Navigate replace to="/" />} path="/home" />
       <Route element={<NotFoundPage />} path="*" />
     </Routes>

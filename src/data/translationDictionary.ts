@@ -1,22 +1,64 @@
 const translations: Record<string, string> = {
+  a: "um",
+  an: "um",
+  and: "e",
+  or: "ou",
   apple: "maca",
   banana: "banana",
   bread: "pao",
+  burger: "hamburguer",
+  coconut: "coco",
+  cold: "gelado",
   coffee: "cafe",
+  creamy: "cremoso",
+  crispy: "crocante",
   tea: "cha",
   juice: "suco",
   water: "agua",
+  lemonade: "limonada",
+  like: "gostar",
+  drink: "beber",
+  eat: "comer",
+  fresh: "fresco",
+  hot: "quente",
+  iced: "gelado",
+  ice: "gelo",
+  natural: "natural",
+  pasta: "macarrao",
+  pancakes: "panquecas",
+  popcorn: "pipoca",
+  refreshing: "refrescante",
+  salty: "salgado",
+  smoothie: "vitamina",
+  soda: "refrigerante",
+  soft: "macio",
+  spicy: "picante",
+  sparkling: "com gas",
+  sushi: "sushi",
+  sweet: "doce",
+  tasty: "saboroso",
+  warm: "morno",
   milk: "leite",
   pizza: "pizza",
   salad: "salada",
   chicken: "frango",
   fish: "peixe",
   rice: "arroz",
-  pasta: "macarrao",
   soup: "sopa",
   cake: "bolo",
   fruit: "fruta",
   vegetables: "vegetais",
+  chocolate: "chocolate",
+  milkshake: "milk-shake",
+  beer: "cerveja",
+  bacon: "bacon",
+  lesson: "aula",
+  routine: "rotina",
+  routines: "rotinas",
+  homework: "tarefa de casa",
+  grammar: "gramatica",
+  vocabulary: "vocabulario",
+  verbs: "verbos",
   wine: "vinho",
   meeting: "reuniao",
   report: "relatorio",
@@ -144,12 +186,72 @@ const translations: Record<string, string> = {
   target: "objetivo"
 };
 
+const phraseTranslations: Record<string, string> = {
+  "coconut water": "agua de coco",
+  "ice cream": "sorvete",
+  "simple present": "presente simples",
+  "food drinks": "comidas e bebidas",
+  "food and drinks": "comidas e bebidas",
+  "a an": "a ou an",
+  "with gas": "com gas"
+};
+
+const articleWords = new Set(["a", "an", "the", "to"]);
+
 function normalizeTerm(rawWord: string): string {
   return rawWord
     .toLowerCase()
     .replace(/\([^)]*\)/g, "")
+    .replace(/&/g, " and ")
     .replace(/[^a-z\s-]/g, "")
+    .replace(/\s+/g, " ")
     .trim();
+}
+
+function singularizeWord(word: string): string {
+  if (word.endsWith("ies") && word.length > 3) {
+    return `${word.slice(0, -3)}y`;
+  }
+
+  if (word.endsWith("es") && word.length > 2) {
+    return word.slice(0, -2);
+  }
+
+  if (word.endsWith("s") && word.length > 1) {
+    return word.slice(0, -1);
+  }
+
+  return word;
+}
+
+function guessBaseVerb(word: string): string {
+  if (word.endsWith("ing") && word.length > 4) {
+    return word.slice(0, -3);
+  }
+
+  if (word.endsWith("ed") && word.length > 3) {
+    return word.slice(0, -2);
+  }
+
+  return word;
+}
+
+function lookupToken(word: string): string | null {
+  if (translations[word]) {
+    return translations[word];
+  }
+
+  const singular = singularizeWord(word);
+  if (translations[singular]) {
+    return translations[singular];
+  }
+
+  const verbBase = guessBaseVerb(word);
+  if (translations[verbBase]) {
+    return translations[verbBase];
+  }
+
+  return null;
 }
 
 export function translateWord(rawWord: string): string {
@@ -158,8 +260,30 @@ export function translateWord(rawWord: string): string {
     return "traducao a definir";
   }
 
+  if (phraseTranslations[cleaned]) {
+    return phraseTranslations[cleaned];
+  }
+
   if (translations[cleaned]) {
     return translations[cleaned];
+  }
+
+  const tokens = cleaned.split(" ").filter(Boolean);
+  if (tokens.length === 1) {
+    return lookupToken(tokens[0]) ?? `uso em contexto: ${cleaned}`;
+  }
+
+  const translatedTokens = tokens.map((token) => {
+    if (articleWords.has(token)) {
+      return "";
+    }
+
+    return lookupToken(token) ?? token;
+  });
+
+  const compact = translatedTokens.filter(Boolean).join(" ").trim();
+  if (compact && compact !== cleaned) {
+    return compact;
   }
 
   return `uso em contexto: ${cleaned}`;
