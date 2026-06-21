@@ -122,21 +122,14 @@ Professor fala o par. Alunos levantam a mão:
 
 **Perguntas:**
 - *Do you drink cold soda?*
-- *Do you eat hot pizza?*
-- *Do you like sweet pancakes?*
 - *Do you drink iced lemonade?*
 - *Do you eat spicy chicken?*
 
 ### 5. CONTROLLED PRACTICE (10 minutos)
 
-1. *Do you drink cold soda?*
-2. *Do you eat hot pizza?*
-3. *Do you like sweet pancakes?*
-4. *Do you drink iced lemonade?*
-5. *Do you eat spicy chicken?*
-6. *Do you like creamy pasta?*
-7. *Do you drink warm tea?*
-8. *Do you like fresh sushi?*
+1. *Do you like creamy pasta?*
+2. *Do you drink warm tea?*
+3. *Do you like fresh sushi?*
 
 **Exemplo de diálogo:**
 
@@ -152,9 +145,8 @@ Professor fala o par. Alunos levantam a mão:
 
 Professor pergunta a 3 alunos aleatórios:
 
-1. *Do you drink cold soda?*
-2. *Do you eat hot pizza?*
-3. *Do you like sweet pancakes?*
+1. *Do you eat hot pizza?*
+2. *Do you like sweet pancakes?*
 
 **Recapitulação no quadro:**
 
