@@ -1,10 +1,14 @@
 import { TeacherGuidePlan } from "../data/courseTypes";
+import { useAutoTranslate } from "../hooks/useAutoTranslate";
 
 type TeacherLessonGuideProps = {
   lesson: TeacherGuidePlan;
 };
 
 export function TeacherLessonGuide({ lesson }: TeacherLessonGuideProps) {
+  const previewVocab = lesson.vocab.slice(0, 10);
+  const { getTranslation } = useAutoTranslate(previewVocab);
+
   return (
     <details className="rounded-2xl bg-white/90 p-4 shadow-lesson" open={lesson.order <= 1}>
       <summary className="cursor-pointer list-none">
@@ -24,9 +28,9 @@ export function TeacherLessonGuide({ lesson }: TeacherLessonGuideProps) {
         <article className="rounded-xl bg-dawn/70 p-3">
           <h4 className="text-sm font-bold uppercase tracking-wide text-ocean">Vocabulos e traducoes</h4>
           <ul className="mt-2 space-y-1 text-sm text-slate">
-            {lesson.vocab.slice(0, 10).map((item) => (
-              <li key={`vocab-${item.word}`}>
-                {item.word}: {item.translation} | contexto: {item.supportWord}
+            {previewVocab.map((item) => (
+              <li key={`vocab-${item}`}>
+                {item}: {getTranslation(item)}
               </li>
             ))}
           </ul>

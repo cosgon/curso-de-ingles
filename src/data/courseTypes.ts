@@ -1,12 +1,8 @@
-export type VocabItem = {
-  word: string;
-  translation: string;
-};
+export type VocabItem = string;
 
 export type VerbItem = {
   verb: string;
   usage: string;
-  translation: string;
 };
 
 export type GrammarItem = {

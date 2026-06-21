@@ -1,5 +1,4 @@
 import { TeacherGuidePlan, VerbItem, VocabItem } from "./courseTypes";
-import { translateWord } from "./translationDictionary";
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -61,6 +60,14 @@ function splitList(content: string): string[] {
   return splitRows(content).slice(0, 8);
 }
 
+function normalizeVocabTerm(noun: string, adjective?: string): string {
+  return [adjective ?? "", noun]
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
 function parseVocabulary(vocabSection: string): VocabItem[] {
   const rows = vocabSection
     .split("\n")
@@ -68,7 +75,7 @@ function parseVocabulary(vocabSection: string): VocabItem[] {
     .filter((line) => line.includes("|") && !line.includes("---") && !line.toLowerCase().includes("substantivo"));
 
   if (rows.length === 0) {
-    return [{ word: "review", translation: "revisao", supportWord: "conteudo" }];
+    return ["guided review", "classroom practice"];
   }
 
   return rows.map((row) => {
@@ -77,13 +84,7 @@ function parseVocabulary(vocabSection: string): VocabItem[] {
       .map((part) => cleanMarkdownText(part.trim()))
       .filter(Boolean);
 
-    const adjective = adjectiveRaw ?? "uso geral";
-
-    return {
-      word: nounRaw,
-      translation: translateWord(nounRaw),
-      supportWord: `${adjective} (${translateWord(adjective)})`
-    };
+    return normalizeVocabTerm(nounRaw, adjectiveRaw);
   });
 }
 
@@ -93,7 +94,7 @@ function parseVerbs(verbsSection: string): VerbItem[] {
     .map((line) => line.replace(/^-\s*/, "").trim());
 
   if (rows.length === 0) {
-    return [{ verb: "review", usage: "revisao", translation: "revisar" }];
+    return [{ verb: "review", usage: "revisao", translation: "review" }];
   }
 
   return rows.map((row) => {
@@ -110,7 +111,7 @@ function parseVerbs(verbsSection: string): VerbItem[] {
     return {
       verb: clean.toLowerCase(),
       usage: "aplicar em frases da aula",
-      translation: translateWord(clean)
+      translation: clean.toLowerCase()
     };
   });
 }
@@ -156,9 +157,9 @@ export function parseTeacherGuide(fileName: string, markdown: string): TeacherGu
     order: readOrder(fileName),
     title: readTitle(markdown),
     objective: readHeaderValue(markdown, "Objetivo", "Objetivo pedagogico nao informado"),
-    duration: readHeaderValue(markdown, "Dura\u00e7\u00e3o", "60 minutos"),
-    level: readHeaderValue(markdown, "N\u00edvel", "A1"),
-    vocab: parseVocabulary(readSection(markdown, ["VOCABUL\u00c1RIO", "VOCABULARIO", "VOCABULARY"])),
+    duration: readHeaderValue(markdown, "Duração", "60 minutos"),
+    level: readHeaderValue(markdown, "Nível", "A1"),
+    vocab: parseVocabulary(readSection(markdown, ["VOCABULÁRIO", "VOCABULARIO", "VOCABULARY"])),
     verbs: parseVerbs(readSection(markdown, ["VERBOS DA AULA", "VERBOS", "VERBS"])),
     structures: parseStructures(markdown),
     timeline: splitList(timelineSection),

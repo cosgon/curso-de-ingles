@@ -1,10 +1,13 @@
 import { VerbItem } from "../data/courseTypes";
+import { useAutoTranslate } from "../hooks/useAutoTranslate";
 
 type VerbConjugationTableProps = {
   verbs: VerbItem[];
 };
 
 export function VerbConjugationTable({ verbs }: VerbConjugationTableProps) {
+  const { getTranslation } = useAutoTranslate(verbs.map((item) => item.verb));
+
   return (
     <section>
       <h2 className="font-heading text-2xl text-ocean">Verbos da aula</h2>
@@ -21,7 +24,7 @@ export function VerbConjugationTable({ verbs }: VerbConjugationTableProps) {
             {verbs.map((item) => (
               <tr className="border-t border-dawn" key={item.verb}>
                 <td className="px-4 py-3 font-bold text-slate">{item.verb}</td>
-                <td className="px-4 py-3 text-slate">{item.translation}</td>
+                <td className="px-4 py-3 text-slate">{getTranslation(item.verb)}</td>
                 <td className="px-4 py-3 text-slate">{item.usage}</td>
               </tr>
             ))}

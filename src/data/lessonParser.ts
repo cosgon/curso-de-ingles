@@ -1,5 +1,4 @@
 import { LessonPlan, PracticeChoice, PracticeGap, VerbItem, VocabItem } from "./courseTypes";
-import { translateWord } from "./translationDictionary";
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -43,29 +42,28 @@ function splitList(content: string): string[] {
   return ["Conteudo de revisao em sala."];
 }
 
+function normalizeVocabTerm(noun: string, adjective?: string): string {
+  return [adjective ?? "", noun]
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
 function parseVocabulary(vocabSection: string): VocabItem[] {
+  console.log("Parsing vocabulary section:", vocabSection.split("\n"));
   const rows = vocabSection
     .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.includes("|") && !line.includes("---") && !line.toLowerCase().includes("substantivo"));
-
-  if (rows.length === 0) {
-    return [
-      { word: "review", translation: "revisao"},
-      { word: "practice", translation: "pratica"}
-    ];
-  }
+    .map((line) => line.trim().replace(/^-/, "").trim())
 
   return rows.map((row) => {
-    const [first, second] = row
+    const [nounRaw, adjectiveRaw] = row
       .split("|")
       .map((part) => part.trim())
       .filter(Boolean);
 
-    return {
-      word: `${second ? `${second} ` : ""}${first}`,
-      translation: translateWord(`${first} ${second ?? ""}`.trim()),
-  }; });
+    return normalizeVocabTerm(nounRaw, adjectiveRaw);
+  });
 }
 
 function parseVerbs(verbsSection: string): VerbItem[] {
@@ -75,7 +73,7 @@ function parseVerbs(verbsSection: string): VerbItem[] {
     .find((line) => line.startsWith("-") || line.includes(","));
 
   if (!verbsLine) {
-    return [{ verb: "review", usage: "revisao", translation: "revisar" }];
+    return [{ verb: "review", usage: "revisao" }];
   }
 
   return verbsLine
@@ -86,7 +84,6 @@ function parseVerbs(verbsSection: string): VerbItem[] {
     .map((verb) => ({
       verb,
       usage: "aplique em frases da aula",
-      translation: translateWord(verb)
     }));
 }
 
@@ -106,18 +103,18 @@ function pickDistractors(pool: string[], answer: string): string[] {
 
 function buildPractice(vocab: VocabItem[], verbs: VerbItem[]): { fillBlanks: PracticeGap[]; multipleChoice: PracticeChoice[] } {
   const fillBlanks = verbs.slice(0, 3).map((item) => ({
-    prompt: `Complete com o verbo correto: I ______ every day. (${item.translation})`,
+    prompt: "Complete com o verbo correto: I ______ every day.",
     answer: item.verb.split(" ")[0].toLowerCase(),
     tip: `Use o verbo "${item.verb}".`
   }));
 
-  const translations = vocab.map((item) => item.translation);
+  const distractorPool = [...verbs.map((item) => item.verb.toLowerCase()), "homework", "classroom", "teacher"];
   const multipleChoice = vocab.slice(0, 3).map((item) => {
-    const distractors = pickDistractors(translations, item.translation);
+    const distractors = pickDistractors(distractorPool, item);
     return {
-      question: `Qual a melhor traducao para "${item.word}"?`,
-      options: [item.translation, ...distractors].sort(),
-      answer: item.translation
+      question: "Qual expressao faz parte do vocabulario da aula?",
+      options: [item, ...distractors].sort(),
+      answer: item
     };
   });
 

@@ -23,7 +23,7 @@
 - Creamy pasta
 
 ## Verbos
-- Drink, Eat, Like
+- To drink, To eat, To like
 
 ## Gramática
 - A or An
