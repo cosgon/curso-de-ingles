@@ -1,6 +1,5 @@
 import { Link, useParams } from "react-router-dom";
 import { GrammarPanel } from "../components/GrammarPanel";
-import { PracticeZone } from "../components/PracticeZone";
 import { StudyPlanPanel } from "../components/StudyPlanPanel";
 import { VerbConjugationTable } from "../components/VerbConjugationTable";
 import { VocabFlashcards } from "../components/VocabFlashcards";
@@ -52,7 +51,6 @@ export function LessonPage({ lessons, completedIds, onToggleLesson }: LessonPage
       <VocabFlashcards vocab={lesson.vocab} />
       <VerbConjugationTable verbs={lesson.verbs} />
       <GrammarPanel grammar={lesson.grammar} />
-      <PracticeZone practice={lesson.practice} />
       <StudyPlanPanel development={lesson.development} homework={lesson.homework} prep={lesson.prep} />
     </main>
   );

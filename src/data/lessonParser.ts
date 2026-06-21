@@ -51,7 +51,6 @@ function normalizeVocabTerm(noun: string, adjective?: string): string {
 }
 
 function parseVocabulary(vocabSection: string): VocabItem[] {
-  console.log("Parsing vocabulary section:", vocabSection.split("\n"));
   const rows = vocabSection
     .split("\n")
     .map((line) => line.trim().replace(/^-/, "").trim())

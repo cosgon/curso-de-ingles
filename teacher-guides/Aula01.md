@@ -28,15 +28,11 @@
 - Tasty burger
 - Creamy pasta
 
----
-
 ## VERBOS DA AULA
 
-- **EAT** (comer)
-- **DRINK** (beber)
-- **LIKE** (gostar)
-
----
+- **TO EAT** (comer)
+- **TO DRINK** (beber)
+- **TO LIKE** (gostar)
 
 ## ESTRUTURAS DA AULA
 
@@ -46,11 +42,8 @@
 | I eat hot pizza. | I don't eat hot pizza. | Do you eat hot pizza? |
 | I like sweet pancakes. | I don't like sweet pancakes. | Do you like sweet pancakes? |
 
----
-
 ## CRONOGRAMA DA AULA
 
----
 
 ### 1. WARM-UP (5 minutos)
 
@@ -66,8 +59,6 @@
 
 **Objetivo:** Apresentar o vocabulário de forma visual e contextualizada.
 
----
-
 ### 2. VOCABULARY PRESENTATION (10 minutos)
 
 **Passo 1 (5 min):** Professor apresenta a tabela de vocabulário.
@@ -80,8 +71,6 @@
 - Alunos: *"Cold soda"*
 - Professor: *"Hot chocolate"*
 - Alunos: *"Hot chocolate"*
-
----
 
 ### 3. GRAMMAR FOCUS – A / AN (10 minutos)
 
@@ -111,8 +100,6 @@ Professor fala o par. Alunos levantam a mão:
 | ___ sweet ice cream | AN |
 | ___ fresh sushi | A |
 
----
-
 ### 4. STRUCTURE PRESENTATION (10 minutos)
 
 **Quadro com as 3 estruturas:**
@@ -140,8 +127,6 @@ Professor fala o par. Alunos levantam a mão:
 - *Do you drink iced lemonade?*
 - *Do you eat spicy chicken?*
 
----
-
 ### 5. CONTROLLED PRACTICE (10 minutos)
 
 1. *Do you drink cold soda?*
@@ -161,8 +146,6 @@ Professor fala o par. Alunos levantam a mão:
 
 **Professor circula pela sala ajudando e corrigindo.**
 
----
-
 ### 7. WRAP-UP (5 minutos)
 
 **Revisão rápida:**
@@ -179,8 +162,6 @@ Professor pergunta a 3 alunos aleatórios:
 - Negativa: *I don't drink cold soda.*
 - Pergunta: *Do you drink cold soda?*
 - Respostas: *Yes, I do. / No, I don't.*
-
----
 
 ## RESUMO DA AULA
 

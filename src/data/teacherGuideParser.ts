@@ -71,8 +71,7 @@ function normalizeVocabTerm(noun: string, adjective?: string): string {
 function parseVocabulary(vocabSection: string): VocabItem[] {
   const rows = vocabSection
     .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.includes("|") && !line.includes("---") && !line.toLowerCase().includes("substantivo"));
+    .map((line) => line.trim().replace(/^-/, "").trim())
 
   if (rows.length === 0) {
     return ["guided review", "classroom practice"];
@@ -94,7 +93,7 @@ function parseVerbs(verbsSection: string): VerbItem[] {
     .map((line) => line.replace(/^-\s*/, "").trim());
 
   if (rows.length === 0) {
-    return [{ verb: "review", usage: "revisao", translation: "review" }];
+    return [{ verb: "review", usage: "revisao" }];
   }
 
   return rows.map((row) => {
@@ -103,7 +102,6 @@ function parseVerbs(verbsSection: string): VerbItem[] {
       return {
         verb: pair[1].trim().toLowerCase(),
         usage: "aplicar em frases da aula",
-        translation: pair[2].trim().toLowerCase()
       };
     }
 
@@ -111,7 +109,6 @@ function parseVerbs(verbsSection: string): VerbItem[] {
     return {
       verb: clean.toLowerCase(),
       usage: "aplicar em frases da aula",
-      translation: clean.toLowerCase()
     };
   });
 }
